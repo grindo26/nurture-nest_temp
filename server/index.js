@@ -10,7 +10,20 @@ const static = express.static(__dirname + "/public");
 app.use("/public", static);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+app.use(
+    cors({
+        origin: [
+            "https://nurture-nest.vercel.app",
+            "https://nurture-nest-backend.vercel.app",
+            "https://vercel.com/pratiks-projects-b162ceac/nurture-nest/6jzNNHNqWLUTb1EHGNQPDSpp5zQJ",
+            "https://vercel.com/pratiks-projects-b162ceac/nurture-nest/GzSznHkRpc5dgvKYoeyAtd2EpRfy",
+            "*",
+        ], // Specify allowed origins
+        credentials: true, // Allows credentials such as cookies to be sent with requests
+        methods: ["GET", "POST", "PUT", "DELETE"], // Specify allowed HTTP methods
+        allowedHeaders: ["Content-Type", "Authorization"], // Specify allowed headers
+    })
+);
 app.use(
     session({
         name: "AuthCookie",
