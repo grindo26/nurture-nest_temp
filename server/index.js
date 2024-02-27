@@ -3,6 +3,7 @@ const app = express();
 const cors = require("cors");
 const session = require("express-session");
 const configRoutes = require("./routes");
+require("dotenv").config();
 
 const static = express.static(__dirname + "/public");
 
@@ -19,6 +20,11 @@ app.use(
     })
 );
 
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
 //globals here
 //This file contains all global variables
 //Example: constants, variable names, etc.
@@ -29,11 +35,23 @@ global.userTypeChild = "CHILD";
 const ctrReq = {};
 let users = [];
 
-const http = require("http").Server(app);
+configRoutes(app);
+const PORT = process.env.PORT || 3000;
 
-const socketIO = require("socket.io")(http, {
+const server = app.listen(PORT, "0.0.0.0", () => {
+    console.log(`listening on *:${PORT}`);
+});
+
+const socketIO = require("socket.io")(server, {
     cors: {
-        origin: "http://localhost:8081",
+        origin: [
+            "*",
+            "https://nurture-nest.vercel.app",
+            "https://nurture-nest-backend.vercel.app",
+            "https://vercel.com/pratiks-projects-b162ceac/nurture-nest/6jzNNHNqWLUTb1EHGNQPDSpp5zQJ",
+            "https://vercel.com/pratiks-projects-b162ceac/nurture-nest/GzSznHkRpc5dgvKYoeyAtd2EpRfy",
+        ],
+        credentials: true,
     },
 });
 
@@ -57,10 +75,4 @@ socketIO.on("connection", (socket) => {
         socketIO.emit("newUserResponse", users);
         socket.disconnect();
     });
-});
-
-configRoutes(app);
-
-http.listen(3000, () => {
-    console.log(`listening on *:${3000}`);
 });
